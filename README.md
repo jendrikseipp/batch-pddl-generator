@@ -3,6 +3,9 @@
 Specify PDDL generator parameters and their value ranges and let BPG generate
 PDDL tasks for you.
 
+## Requirements
+
+    python=3.8
 
 ## Installation
 
