@@ -1,3 +1,4 @@
+# Note: This project currently requires Python 3.8-3.11 due to ConfigSpace dependency limitations
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -16,18 +17,18 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.8,<3.12"
 dependencies = [
     "lab==6.5",
     "parse",
     "smac==0.12.3", 
-    "numpy>=1.25,<2.0",  # Compatible with Python 3.12 but not 2.x
+    "numpy<2.0",  # Compatible with older Python and ConfigSpace
     "configspace==0.4.20",  # Version compatibility from original requirements
 ]
 

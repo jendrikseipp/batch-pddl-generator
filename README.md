@@ -6,6 +6,8 @@ PDDL tasks for you.
 
 ## Installation
 
+**Note: This project requires Python 3.8-3.11 due to dependency compatibility. Python 3.12+ is not currently supported due to ConfigSpace compilation issues.**
+
 ### Using uv (recommended)
 
 Install [uv](https://docs.astral.sh/uv/) and then:
