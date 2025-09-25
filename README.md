@@ -8,22 +8,11 @@ PDDL tasks for you.
 
 **Note: This project requires Python 3.8-3.11 due to dependency compatibility. Python 3.12+ is not currently supported due to ConfigSpace compilation issues.**
 
-### Using uv (recommended)
-
 Install [uv](https://docs.astral.sh/uv/) and then:
 
     uv sync
 
 This will create a virtual environment and install all dependencies.
-
-### Using pip (traditional)
-
-Create a virtual environment:
-
-    python3 -m venv --prompt sig .venv
-    source .venv/bin/activate
-    pip install -U pip wheel
-    pip install -r requirements.txt
 
 Clone repo with PDDL generators, and build the generators:
 
@@ -51,13 +40,7 @@ There are two ways in which this library can be used:
 
     the command
 
-        # Using uv:
         uv run python src/generate-instances.py \
-            --generators-dir <path/to/generators> \
-            tetris /tmp/tasks
-
-        # Or using traditional Python:
-        python src/generate-instances.py \
             --generators-dir <path/to/generators> \
             tetris /tmp/tasks
 
@@ -70,14 +53,7 @@ There are two ways in which this library can be used:
 2. Use SMAC to generate planning tasks that can be solved by a given planner
 within given resource limits.
 
-        # Using uv:
         uv run python src/search-instances-for-planner.py \
-            --generators-dir <path/to/generators> \
-            --planner-time-limit 60 \
-            tetris <path/to/singularity-planner.img>
-
-        # Or using traditional Python:
-        python src/search-instances-for-planner.py \
             --generators-dir <path/to/generators> \
             --planner-time-limit 60 \
             tetris <path/to/singularity-planner.img>
