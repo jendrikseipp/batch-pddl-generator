@@ -1,2 +1,6 @@
 experiments/data/
 src/smac-*/
+
+# uv
+.venv/
+uv.lock
