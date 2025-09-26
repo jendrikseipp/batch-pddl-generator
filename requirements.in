@@ -1,8 +1,0 @@
-# After making changes here, update requirements.txt by running
-#
-# pip install pip-tools
-# pip-compile or python -m piptools compile
-
-lab==6.5
-parse
-smac==0.12.3

@@ -1,2 +1,12 @@
 experiments/data/
 src/smac-*/
+
+# Virtual environments
+.venv/
+test_env/
+venv/
+__pycache__/
+*.pyc
+
+# uv
+uv.lock
