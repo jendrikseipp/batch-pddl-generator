@@ -6,7 +6,7 @@ PDDL tasks for you.
 
 ## Installation
 
-**Note: This project requires Python 3.8-3.11 due to dependency compatibility. Python 3.12+ is not currently supported due to ConfigSpace compilation issues.**
+**Requirements: Python 3.10 or later**
 
 Install [uv](https://docs.astral.sh/uv/) and then:
 
@@ -23,9 +23,7 @@ Clone repo with PDDL generators, and build the generators:
 
 ## Usage
 
-There are two ways in which this library can be used:
-
-1. Generate the Cartesian product of instances over the given parameter values.
+Generate the Cartesian product of instances over the given parameter values.
 
     For example, when you specify the following domain
 
@@ -41,22 +39,13 @@ There are two ways in which this library can be used:
     the command
 
         uv run python src/generate-instances.py \
-            --generators-dir <path/to/generators> \
+            <path/to/generators> \
             tetris /tmp/tasks
 
     will generate instances at /tmp/tasks for the following combination of
     rows and blocks:
 
         [(4, 1), (4, 2), (4, 3), (6, 1), (6, 2), (6, 3), (8, 1), (8, 2), (8, 3)]
-
-
-2. Use SMAC to generate planning tasks that can be solved by a given planner
-within given resource limits.
-
-        uv run python src/search-instances-for-planner.py \
-            --generators-dir <path/to/generators> \
-            --planner-time-limit 60 \
-            tetris <path/to/singularity-planner.img>
 
 
 ## Finding Duplicate Tasks
