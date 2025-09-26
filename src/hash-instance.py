@@ -20,7 +20,6 @@ TRANSLATOR_DIR = DOWNWARD_DIR / "src" / "translate"
 sys.path.insert(0, str(TRANSLATOR_DIR))
 
 from pddl_parser import pddl_file
-import pddl
 
 
 def dump_task(task):
