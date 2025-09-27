@@ -1,4 +1,4 @@
-# Batch PDDL Generator (BPG)
+# Batch PDDL Generator
 
 Specify PDDL generator parameters and their value ranges and let BPG generate
 PDDL tasks for you.
@@ -6,56 +6,37 @@ PDDL tasks for you.
 
 ## Installation
 
-Create a virtual environment:
+* Install [uv](https://docs.astral.sh/uv/).
+* Clone repo with PDDL generators, and build the generators:
 
-    python3 -m venv --prompt sig .venv
-    source .venv/bin/activate
-    pip install -U pip wheel
-    pip install -r requirements.txt
-
-Clone repo with PDDL generators, and build the generators:
-
+    ```
     git clone git@github.com:AI-Planning/pddl-generators.git
     cd pddl-generators
     ./build_all
-    
+    ```
+
 
 ## Usage
 
-There are two ways in which this library can be used:
+Generate the Cartesian product of instances over the given parameter values. For example, when you specify the following domain
 
-1. Generate the Cartesian product of instances over the given parameter values.
+    Domain(
+        "tetris",
+        "generator.py {rows} {block_type} {seed}",
+        [
+            get_int("rows", lower=4, upper=8, step_size=2),
+            get_enum("block_type", ["1", "2", "3"], "1"),
+        ],
+    ),
 
-    For example, when you specify the following domain
+the command
 
-        Domain(
-            "tetris",
-            "generator.py {rows} {block_type} {seed}",
-            [
-                get_int("rows", lower=4, upper=8, step_size=2),
-                get_enum("block_type", ["1", "2", "3"], "1"),
-            ],
-        ),
+    uv run src/generate-instances.py <path/to/generators> tetris /tmp/tasks
 
-    the command
+will generate instances at /tmp/tasks for the following combination of
+rows and blocks:
 
-        /generate-instances.py \
-            --generators-dir <path/to/generators> \
-            tetris /tmp/tasks
-
-    will generate instances at /tmp/tasks for the following combination of
-    rows and blocks:
-
-        [(4, 1), (4, 2), (4, 3), (6, 1), (6, 2), (6, 3), (8, 1), (8, 2), (8, 3)]
-
-
-2. Use SMAC to generate planning tasks that can be solved by a given planner
-within given resource limits.
-
-        ./search-instances-for-planner.py \
-            --generators-dir <path/to/generators> \
-            --planner-time-limit 60 \
-            tetris <path/to/singularity-planner.img>
+    [(4, 1), (4, 2), (4, 3), (6, 1), (6, 2), (6, 3), (8, 1), (8, 2), (8, 3)]
 
 
 ## Finding Duplicate Tasks

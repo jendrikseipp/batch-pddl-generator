@@ -72,15 +72,32 @@ def main():
 
     # Build Configuration Space which defines all parameters and their ranges.
     cs = ConfigSpace.ConfigurationSpace()
-    cs.add_hyperparameters(domain.attributes)
-    print(f"Parameters: {cs.get_hyperparameters_dict()}")
+    cs.add(domain.attributes)
+    print(f"Parameters: {dict(cs)}")
 
-    grid = generate_grid(cs)
+    # Create num_steps_dict for generate_grid
+    # For UniformIntegerHyperparameter, calculate steps based on the range
+    # CategoricalHyperparameter will use all choices automatically
+    # UniformFloatHyperparameter will use a reasonable default grid
+    num_steps_dict = {}
+    for hp_name, hp in dict(cs).items():
+        if hasattr(hp, 'lower') and hasattr(hp, 'upper'):
+            if hasattr(hp, 'step_size') and hp.step_size is not None:
+                # Calculate number of steps based on step_size
+                num_steps = int((hp.upper - hp.lower) / hp.step_size) + 1
+                num_steps_dict[hp_name] = num_steps
+            elif hp.__class__.__name__ == 'UniformIntegerHyperparameter':
+                # For integer hyperparameters, use the full range (every integer value)
+                num_steps_dict[hp_name] = hp.upper - hp.lower + 1
+            # For continuous float hyperparameters, let ConfigSpace decide the grid size
+        # Categorical hyperparameters automatically use all choices
+    
+    grid = generate_grid(cs, num_steps_dict)
     print(f"Number of configurations: {len(grid)}")
     if args.dry_run:
         return
     for cfg in grid:
-        cfg = cfg.get_dictionary()
+        cfg = dict(cfg)
         for seed in range(args.num_random_seeds):
             generate_task(
                 generators_dir, domain, cfg, seed, tmp_dir, destdir,

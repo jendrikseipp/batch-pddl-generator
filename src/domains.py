@@ -18,15 +18,34 @@ class IllegalConfiguration(Exception):
 
 
 def get_int(name, lower, upper, *, log=False, step_size=1):
-    return UniformIntegerHyperparameter(
-        name, lower=lower, upper=upper, default_value=lower, log=log, q=step_size
-    )
+    if step_size == 1:
+        # Use UniformIntegerHyperparameter for step_size=1 (continuous integer range)
+        return UniformIntegerHyperparameter(
+            name, lower=lower, upper=upper, default_value=lower, log=log
+        )
+    else:
+        # Use CategoricalHyperparameter for step_size>1 (discrete values)
+        choices = list(range(lower, upper + 1, step_size))
+        return CategoricalHyperparameter(name, choices=choices, default_value=choices[0])
 
 
 def get_float(name, lower, upper, *, log=False, precision=0.01):
-    return UniformFloatHyperparameter(
-        name, lower=lower, upper=upper, default_value=lower, log=log, q=precision
-    )
+    # For discrete float values with specific precision, create a categorical
+    # hyperparameter with all valid values
+    if precision is not None and precision > 0:
+        import numpy as np
+        # Generate all valid values within the range using the precision
+        values = np.arange(lower, upper + precision/2, precision)
+        # Round to avoid floating point precision issues
+        values = np.round(values, decimals=10)
+        # Convert to list and ensure we stay within bounds
+        values = [float(v) for v in values if lower <= v <= upper]
+        return CategoricalHyperparameter(name, choices=values, default_value=values[0])
+    else:
+        # For continuous float values, use UniformFloatHyperparameter
+        return UniformFloatHyperparameter(
+            name, lower=lower, upper=upper, default_value=lower, log=log
+        )
 
 
 def get_enum(name, choices, default_value=None):
@@ -364,17 +383,17 @@ DOMAINS = [
         "-Q {prob_cylindrical_goal} -W {prob_color_init} -E {prob_color_goal} "
         "-R {prob_hole_init} -T {prob_hole_goal} -Y {prob_surface_goal} -r {seed}",
         [
-            get_int("parts", lower=1, upper=100),
-            get_int("shapes", lower=0, upper=2, log=False),
-            get_int("colors", lower=1, upper=4, log=False),
-            get_int("widths", lower=1, upper=3, log=False),
+            get_int("parts", lower=1, upper=3),
+            get_int("shapes", lower=0, upper=1, log=False),
+            get_int("colors", lower=1, upper=2, log=False),
+            get_int("widths", lower=1, upper=2, log=False),
             get_int("orientations", lower=1, upper=2, log=False),
-            get_int("prob_cylindrical_goal", lower=0, upper=100, log=False),
-            get_int("prob_color_init", lower=0, upper=100, log=False),
-            get_int("prob_color_goal", lower=0, upper=100, log=False),
-            get_int("prob_hole_init", lower=0, upper=100, log=False),
-            get_int("prob_hole_goal", lower=0, upper=100, log=False),
-            get_int("prob_surface_goal", lower=0, upper=100, log=False),
+            get_int("prob_cylindrical_goal", lower=0, upper=100, log=True, step_size=30),
+            get_int("prob_color_init", lower=0, upper=100, log=False, step_size=30),
+            get_int("prob_color_goal", lower=0, upper=100, log=False, step_size=30),
+            get_int("prob_hole_init", lower=0, upper=100, log=False, step_size=30),
+            get_int("prob_hole_goal", lower=0, upper=100, log=False, step_size=30),
+            get_int("prob_surface_goal", lower=0, upper=100, log=False, step_size=30),
         ],
     ),
     Domain(

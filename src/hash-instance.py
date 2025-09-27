@@ -20,7 +20,6 @@ TRANSLATOR_DIR = DOWNWARD_DIR / "src"
 sys.path.insert(0, str(TRANSLATOR_DIR))
 
 from translate.pddl_parser import pddl_file
-import translate.pddl as pddl
 import translate.options as options
 
 
