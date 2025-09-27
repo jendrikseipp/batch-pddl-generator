@@ -118,6 +118,18 @@ def adapt_parameters_spanner(parameters):
     return parameters
 
 
+def adapt_parameters_sokoban(parameters):
+    grid_size = parameters["grid_size"]
+    if grid_size <= 5:
+        bound = 2
+    else:
+        bound = (grid_size * grid_size - 5 * grid_size + 6) / 9.0
+
+    if parameters["boxes"] > bound:
+        raise IllegalConfiguration(f"we need boxes <= {bound}")
+    return parameters
+
+
 def adapt_parameters_tetris(parameters):
     if parameters["rows"] % 2 == 1:
         raise IllegalConfiguration("number of rows must be even")
@@ -159,6 +171,13 @@ DOMAINS = [
         [get_int("n", lower=2, upper=100)],
     ),
     Domain(
+        "briefcaseworld",
+        "briefcaseworld -o {objects} -s {seed}",
+        [
+            get_int("objects", lower=1, upper=100),
+        ],
+    ),
+    Domain(
         "childsnack",
         "child-snack-generator.py pool {seed} {children} {trays} {gluten_factor} {constrainedness}",
         [
@@ -166,6 +185,25 @@ DOMAINS = [
             get_float("constrainedness", lower=1.0, upper=2.0, precision=0.5),
             get_int("trays", lower=1, upper=3),
             get_float("gluten_factor", lower=0.2, upper=0.8, precision=0.2),
+        ],
+    ),
+    Domain(
+        "depots",
+        "depots -e {depots} -i {distributors} -t {trucks} -p {pallets} -h {hoists} -c {crates} -s {seed}",
+        [
+            # IPC instances:
+            # depots from 1 to 6
+            # distributors from 2 to 6
+            # trucks from 2 to 6
+            # pallets from 3 to 20
+            # hoists from 3 to 15
+            # crates from 2 to 20
+            get_int("depots", lower=4, upper=6),
+            get_int("distributors", lower=4, upper=6),
+            get_int("trucks", lower=4, upper=6),
+            get_int("pallets", lower=15, upper=20),
+            get_int("hoists", lower=12, upper=15),
+            get_int("crates", lower=15, upper=20),
         ],
     ),
     Domain(
@@ -272,6 +310,16 @@ DOMAINS = [
             get_int("goals", lower=10, upper=90, step_size=10),  # IPC: 1-40
             get_int("substances", lower=10, upper=80, step_size=10),  # IPC: 3-35
         ],
+    ),
+    Domain(
+        "sokoban",
+        "random/sokoban-generator-typed -n {grid_size} -b {boxes} -w {walls} -s {seed}",
+        [
+            get_int("grid_size", lower=15, upper=20),
+            get_int("boxes", lower=1, upper=10),
+            get_int("walls", lower=0, upper=10),
+        ],
+        adapt_parameters=adapt_parameters_sokoban,
     ),
     Domain(
         "tetris",
