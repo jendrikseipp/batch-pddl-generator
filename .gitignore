@@ -1,2 +1,5 @@
 experiments/data/
 src/smac-*/
+__pycache__/
+benchmark/
+.vscode/
