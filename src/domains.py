@@ -217,12 +217,12 @@ DOMAINS = [
             # pallets from 3 to 20
             # hoists from 3 to 15
             # crates from 2 to 20
-            get_int("depots", lower=4, upper=6),
-            get_int("distributors", lower=4, upper=6),
-            get_int("trucks", lower=4, upper=6),
-            get_int("pallets", lower=15, upper=20),
-            get_int("hoists", lower=12, upper=15),
-            get_int("crates", lower=15, upper=20),
+            get_int("depots", lower=1, upper=3),
+            get_int("distributors", lower=2, upper=3),
+            get_int("trucks", lower=2, upper=4),
+            get_int("pallets", lower=3, upper=8),
+            get_int("hoists", lower=3, upper=8),
+            get_int("crates", lower=2, upper=7),
         ],
     ),
     Domain(
@@ -233,6 +233,14 @@ DOMAINS = [
             get_int("packages", lower=1, upper=3),
             get_int("roadjunctions", lower=2, upper=6),
             get_int("trucks", lower=1, upper=5),
+        ],
+    ),
+    Domain(
+        "ferry",
+        "ferry -l {locations} -c {cars} -s {seed}",
+        [
+            get_int("locations", lower=1, upper=30),
+            get_int("cars", lower=1, upper=30),
         ],
     ),
     Domain(
@@ -257,6 +265,14 @@ DOMAINS = [
             get_int("initial_stacks", lower=1, upper=8),
         ],
         adapt_parameters=adapt_parameters_freecell,
+    ),
+    Domain(
+        "fridge",
+        "fridge -f {fridges} -s {screws} -r {seed}",
+        [
+            get_int("fridges", lower=1, upper=30),
+            get_int("screws", lower=1, upper=30),
+        ],
     ),
     Domain(
         "grid",
