@@ -15,12 +15,11 @@ try:
     DOWNWARD_DIR = Path(os.environ["DOWNWARD_REPO"])
 except KeyError:
     sys.exit("Error: the DOWNWARD_REPO environment variable must point to a Fast Downward repo.")
-TRANSLATOR_DIR = DOWNWARD_DIR / "src"
+TRANSLATOR_DIR = DOWNWARD_DIR / "src" / "translate"
 
 sys.path.insert(0, str(TRANSLATOR_DIR))
 
-from translate.pddl_parser import pddl_file
-import translate.options as options
+from pddl_parser import pddl_file
 
 
 def dump_task(task):
@@ -58,14 +57,6 @@ def dump_task(task):
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python hash-instance.py <domain.pddl> <problem.pddl>", file=sys.stderr)
-        sys.exit(1)
-    
-    domain_file = sys.argv[1]
-    problem_file = sys.argv[2]
-    
-    options.set_options([domain_file, problem_file])
     task = pddl_file.open()
     task_string = dump_task(task)
     debug = False
