@@ -7,6 +7,7 @@ import sys
 from ConfigSpace.hyperparameters import CategoricalHyperparameter
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 from ConfigSpace.hyperparameters import UniformIntegerHyperparameter
+from ConfigSpace.hyperparameters.constant import Constant
 
 
 TMP_PROBLEM = "tmp-problem.pddl"
@@ -128,6 +129,14 @@ def adapt_parameters_grid(parameters):
 def adapt_parameters_hiking(parameters):
     if parameters["cars"] < parameters["couples"] + 1:
         raise IllegalConfiguration("we need cars >= couples + 1")
+    return parameters
+
+
+def adapt_parameters_maintenance(parameters):
+    parameters["planes"] = 3 * parameters["days"]
+    parameters["mechanics"] = 1
+    parameters["cities"] = 3
+    parameters["visits"] = 5
     return parameters
 
 
@@ -298,6 +307,21 @@ DOMAINS = [
         adapt_parameters=adapt_parameters_hiking,
     ),
     Domain(
+        "maintenance",
+        "maintenance {days} {planes} {mechanics} {cities} {visits} {seed}",
+        [
+            get_int("days", lower=60, upper=300, step_size=20),
+        ],
+        adapt_parameters=adapt_parameters_maintenance,
+    ),
+    Domain(
+        "movie",
+        "movie -n {snacks}",
+        [
+            get_int("snacks", lower=1, upper=100),
+        ]
+    ),
+    Domain(
         "mprime",
         "mprime -l {locations} -f {maxfuel} -s {maxspace} -v {vehicles} -c {cargos} -r {seed}",
         [
@@ -333,6 +357,14 @@ DOMAINS = [
         ],
     ),
     Domain(
+        "npuzzle",
+        "n-puzzle-generator -n {size} -s {seed}",
+        [
+            # get_int("size", lower=3, upper=3),
+            Constant("size", 3),
+        ],
+    ),
+    Domain(
         "pathways",
         f"wrapper.py --seed {{seed}} --reactions {{reactions}} --goals {{goals}} --initial-substances {{substances}} {TMP_DOMAIN} {TMP_PROBLEM}",
         [
@@ -350,7 +382,7 @@ DOMAINS = [
         "sokoban",
         "random/sokoban-generator-typed -n {grid_size} -b {boxes} -w {walls} -s {seed}",
         [
-            get_int("grid_size", lower=15, upper=20),
+            get_int("grid_size", lower=5, upper=10),
             get_int("boxes", lower=1, upper=10),
             get_int("walls", lower=0, upper=10),
         ],
