@@ -93,7 +93,6 @@ def main():
         # Categorical hyperparameters automatically use all choices
     
     grid = generate_grid(cs, num_steps_dict)
-    print(f"Number of configurations: {len(grid)}")
     if args.dry_run:
         return
     for cfg in grid:
@@ -103,6 +102,7 @@ def main():
                 generators_dir, domain, cfg, seed, tmp_dir, destdir,
                 time_limit=args.generator_time_limit)
     shutil.rmtree(tmp_dir, ignore_errors=False)
+    print(f"Number of configurations: {len(grid)}")
 
 
 main()

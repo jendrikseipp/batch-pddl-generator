@@ -7,6 +7,7 @@ import sys
 from ConfigSpace.hyperparameters import CategoricalHyperparameter
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 from ConfigSpace.hyperparameters import UniformIntegerHyperparameter
+from ConfigSpace.hyperparameters.constant import Constant
 
 
 TMP_PROBLEM = "tmp-problem.pddl"
@@ -131,9 +132,29 @@ def adapt_parameters_hiking(parameters):
     return parameters
 
 
+def adapt_parameters_maintenance(parameters):
+    parameters["planes"] = 3 * parameters["days"]
+    parameters["mechanics"] = 1
+    parameters["cities"] = 3
+    parameters["visits"] = 5
+    return parameters
+
+
 def adapt_parameters_spanner(parameters):
     if parameters["spanners"] < parameters["nuts"]:
         raise IllegalConfiguration("we need spanners >= nuts")
+    return parameters
+
+
+def adapt_parameters_sokoban(parameters):
+    grid_size = parameters["grid_size"]
+    if grid_size <= 5:
+        bound = 2
+    else:
+        bound = (grid_size * grid_size - 5 * grid_size + 6) / 9.0
+
+    if parameters["boxes"] > bound:
+        raise IllegalConfiguration(f"we need boxes <= {bound}")
     return parameters
 
 
@@ -178,6 +199,13 @@ DOMAINS = [
         [get_int("n", lower=2, upper=100)],
     ),
     Domain(
+        "briefcaseworld",
+        "briefcaseworld -o {objects} -s {seed}",
+        [
+            get_int("objects", lower=1, upper=100),
+        ],
+    ),
+    Domain(
         "childsnack",
         "child-snack-generator.py pool {seed} {children} {trays} {gluten_factor} {constrainedness}",
         [
@@ -188,6 +216,25 @@ DOMAINS = [
         ],
     ),
     Domain(
+        "depots",
+        "depots -e {depots} -i {distributors} -t {trucks} -p {pallets} -h {hoists} -c {crates} -s {seed}",
+        [
+            # IPC instances:
+            # depots from 1 to 6
+            # distributors from 2 to 6
+            # trucks from 2 to 6
+            # pallets from 3 to 20
+            # hoists from 3 to 15
+            # crates from 2 to 20
+            get_int("depots", lower=1, upper=3),
+            get_int("distributors", lower=2, upper=3),
+            get_int("trucks", lower=2, upper=4),
+            get_int("pallets", lower=3, upper=8),
+            get_int("hoists", lower=3, upper=8),
+            get_int("crates", lower=2, upper=7),
+        ],
+    ),
+    Domain(
         "driverlog",
         "dlgen {seed} {roadjunctions} {drivers} {packages} {trucks}",
         [
@@ -195,6 +242,14 @@ DOMAINS = [
             get_int("packages", lower=1, upper=3),
             get_int("roadjunctions", lower=2, upper=6),
             get_int("trucks", lower=1, upper=5),
+        ],
+    ),
+    Domain(
+        "ferry",
+        "ferry -l {locations} -c {cars} -s {seed}",
+        [
+            get_int("locations", lower=1, upper=30),
+            get_int("cars", lower=1, upper=30),
         ],
     ),
     Domain(
@@ -221,6 +276,14 @@ DOMAINS = [
         adapt_parameters=adapt_parameters_freecell,
     ),
     Domain(
+        "fridge",
+        "fridge -f {fridges} -s {screws} -r {seed}",
+        [
+            get_int("fridges", lower=1, upper=30),
+            get_int("screws", lower=1, upper=30),
+        ],
+    ),
+    Domain(
         "grid",
         "generate.py {x} {y} --shapes {shapes} --keys {keys} --locks {locks} --prob-goal {prob_key_in_goal} --seed {seed}",
         [
@@ -242,6 +305,21 @@ DOMAINS = [
             get_int("cars", lower=1, upper=5),
         ],
         adapt_parameters=adapt_parameters_hiking,
+    ),
+    Domain(
+        "maintenance",
+        "maintenance {days} {planes} {mechanics} {cities} {visits} {seed}",
+        [
+            get_int("days", lower=60, upper=300, step_size=20),
+        ],
+        adapt_parameters=adapt_parameters_maintenance,
+    ),
+    Domain(
+        "movie",
+        "movie -n {snacks}",
+        [
+            get_int("snacks", lower=1, upper=100),
+        ]
     ),
     Domain(
         "mprime",
@@ -279,6 +357,14 @@ DOMAINS = [
         ],
     ),
     Domain(
+        "npuzzle",
+        "n-puzzle-generator -n {size} -s {seed}",
+        [
+            # get_int("size", lower=3, upper=3),
+            Constant("size", 3),
+        ],
+    ),
+    Domain(
         "pathways",
         f"wrapper.py --seed {{seed}} --reactions {{reactions}} --goals {{goals}} --initial-substances {{substances}} {TMP_DOMAIN} {TMP_PROBLEM}",
         [
@@ -291,6 +377,16 @@ DOMAINS = [
             get_int("goals", lower=10, upper=90, step_size=10),  # IPC: 1-40
             get_int("substances", lower=10, upper=80, step_size=10),  # IPC: 3-35
         ],
+    ),
+    Domain(
+        "sokoban",
+        "random/sokoban-generator-typed -n {grid_size} -b {boxes} -w {walls} -s {seed}",
+        [
+            get_int("grid_size", lower=5, upper=10),
+            get_int("boxes", lower=1, upper=10),
+            get_int("walls", lower=0, upper=10),
+        ],
+        adapt_parameters=adapt_parameters_sokoban,
     ),
     Domain(
         "tetris",
