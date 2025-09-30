@@ -3,10 +3,8 @@ from pathlib import Path
 import shutil
 import sys
 
-from domains import Domain
 
-
-def generate_input_files(generators_dir, domain: Domain, parameters, seed, output_dir, timeout=None):
+def generate_input_files(generators_dir, domain, parameters, seed, output_dir, timeout=None):
     # Write problem file.
     task_name = join_parameters(parameters)
     plan_dir = Path(output_dir) / task_name / str(seed)
