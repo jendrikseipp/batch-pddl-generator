@@ -15,11 +15,21 @@ try:
     DOWNWARD_DIR = Path(os.environ["DOWNWARD_REPO"])
 except KeyError:
     sys.exit("Error: the DOWNWARD_REPO environment variable must point to a Fast Downward repo.")
-TRANSLATOR_DIR = DOWNWARD_DIR / "src"
 
-sys.path.insert(0, str(TRANSLATOR_DIR))
+# Newer Fast Downward versions provide the translator as the package
+# fast_downward.translate in src/translate.
+if (DOWNWARD_DIR / "src" / "translate" / "fast_downward").is_dir():
+    sys.path.insert(0, str(DOWNWARD_DIR / "src" / "translate"))
+    from fast_downward.translate.pddl_parser import pddl_file
+else:
+    sys.path.insert(0, str(DOWNWARD_DIR / "src"))
+    from translate.pddl_parser import pddl_file
 
-from translate.pddl_parser import pddl_file
+
+def condition_to_string(condition, indent="  "):
+    """Return a representation of the condition that ignores the order of its parts."""
+    parts = sorted(condition_to_string(part, indent + "  ") for part in condition.parts)
+    return "\n".join([f"{indent}{condition._dump()}"] + parts)
 
 
 def dump_task(task):
@@ -41,8 +51,8 @@ def dump_task(task):
     for fact in sorted(str(f) for f in task.init):
         print(f"  {fact}")
     print("Goal:")
-    # TODO: sort conditions in actions, axioms and goals.
-    task.goal.dump()
+    print(condition_to_string(task.goal))
+    # TODO: sort conditions in actions and axioms.
     print("Actions:")
     for action in sorted(task.actions, key=lambda a: a.name):
         action.dump()
